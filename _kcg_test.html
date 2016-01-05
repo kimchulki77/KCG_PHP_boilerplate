@@ -1,0 +1,68 @@
+<html>
+<head>
+
+</head>
+<body>
+testet
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>
+    var config = {} || '' || null;
+    /**
+     * Get Config data with Ajax Response Data
+     * custom ajax method
+     * return ajax response and use/store as javascript var
+     * extend jQuery Ajax and change it
+     * @param qs -> query string {q:value}
+     * @returns result mix|multitype
+     */
+    $.extend({
+        getConfig: function (qs) {
+            var result = null;
+            $.ajax({
+                url: 'GetConfig.php',
+                type: 'POST',
+                data: qs,
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    result = data;
+                },
+                error: function ajaxError(jqXHR, exception) {
+                    if (jqXHR.status === 0) {
+                        alert('Not connected.\nVerify your network.');
+                    } else if (jqXHR.status === 404) {
+                        alert('The requested page not found. [404]');
+                    } else if (jqXHR.status === 500) {
+                        alert('Internal Server Error [500].');
+                    } else if (exception === 'parsererror') {
+                        alert('Requested JSON parse failed.');
+                    } else if (exception === 'timeout') {
+                        alert('Time out error.');
+                    } else if (exception === 'abort') {
+                        alert('Ajax request aborted.');
+                    } else {
+                        alert('Uncaught Error.\n' + jqXHR.responseText);
+                    }
+                }
+            });
+            return result;
+        }
+    });
+
+    // Collect all Class Constant data on page load
+    var CONFIG = (function () {
+        var private = $.getConfig({config_item: ''});
+        return {
+            get: function (name) {
+                return private.data[name];
+            }
+        };
+    })();
+
+    $(function () {
+        alert(CONFIG.get('FB_SHARE_TITLE'));
+    });
+</script>
+</body>
+</html>
